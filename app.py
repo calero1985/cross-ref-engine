@@ -28,15 +28,14 @@ if uploaded_files and api_key:
             loader = PyPDFLoader(tmp_file.name)
             all_pages.extend(loader.load()) # Use .load() here for better control
 
-    # NEW: Split the text into manageable slices (Chunking)
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+   from langchain_text_splitters import RecursiveCharacterTextSplitter
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     docs = text_splitter.split_documents(all_pages)
 
-   # 3. Initialize Brain with Manual Batching (Replaces your old lines 34-35)
+    # 3. Initialize Brain with High-Stability Batching
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
-    batch_size = 50
+    batch_size = 20  
     vectorstore = None
     
     for i in range(0, len(docs), batch_size):
@@ -46,9 +45,10 @@ if uploaded_files and api_key:
         else:
             vectorstore.add_documents(batch)
         
-        # This part tells the user it's working and waits for Google to catch its breath
-        st.write(f"✅ Processing part {int(i/batch_size) + 1}...")
-        time.sleep(2) # <--- This 2-second pause is the magic fix
+        # This tells the UI we are making progress
+        st.write(f"⏳ Syncing knowledge... {int((i/len(docs))*100)}%")
+        time.sleep(3)
+        
 
     # 4. Keep your line 37 and below exactly like this:
     qa_chain = RetrievalQA.from_chain_type(
