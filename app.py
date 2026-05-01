@@ -5,6 +5,8 @@ from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_classic.chains.retrieval_qa.base import RetrievalQA
 import tempfile
+import time 
+
 st.set_page_config(page_title="Cross-Ref Engine", layout="wide")
 # Sidebar for API Key and File Upload
 with st.sidebar:
@@ -36,12 +38,17 @@ if uploaded_files and api_key:
     batch_size = 50
     vectorstore = None
     
+    # Inside your loop...
     for i in range(0, len(docs), batch_size):
         batch = docs[i : i + batch_size]
         if vectorstore is None:
             vectorstore = FAISS.from_documents(batch, embeddings)
         else:
             vectorstore.add_documents(batch)
+        
+        # NEW: The "Breathing Room" for the Free Tier
+        st.write(f"Processed {min(i + batch_size, len(docs))} of {len(docs)} chunks...")
+        time.sleep(2) # Waits 2 seconds so Google doesn't get angry
 
     # 4. Keep your line 37 and below exactly like this:
     qa_chain = RetrievalQA.from_chain_type(
