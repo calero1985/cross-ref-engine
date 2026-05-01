@@ -2,7 +2,7 @@ import streamlit as st
 import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.chains import RetrievalQA
 import tempfile
 st.set_page_config(page_title="Cross-Ref Engine", layout="wide")
