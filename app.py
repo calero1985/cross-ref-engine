@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import time
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
@@ -38,7 +39,6 @@ if uploaded_files and api_key:
     batch_size = 50
     vectorstore = None
     
-    # Inside your loop...
     for i in range(0, len(docs), batch_size):
         batch = docs[i : i + batch_size]
         if vectorstore is None:
@@ -46,9 +46,9 @@ if uploaded_files and api_key:
         else:
             vectorstore.add_documents(batch)
         
-        # NEW: The "Breathing Room" for the Free Tier
-        st.write(f"Processed {min(i + batch_size, len(docs))} of {len(docs)} chunks...")
-        time.sleep(2) # Waits 2 seconds so Google doesn't get angry
+        # This part tells the user it's working and waits for Google to catch its breath
+        st.write(f"✅ Processing part {int(i/batch_size) + 1}...")
+        time.sleep(2) # <--- This 2-second pause is the magic fix
 
     # 4. Keep your line 37 and below exactly like this:
     qa_chain = RetrievalQA.from_chain_type(
