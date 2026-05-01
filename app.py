@@ -26,20 +26,30 @@ if uploaded_files and api_key:
             all_pages.extend(loader.load()) # Use .load() here for better control
 
     # NEW: Split the text into manageable slices (Chunking)
-    #from langchain.text_splitter import RecursiveCharacterTextSplitter
     from langchain_text_splitters import RecursiveCharacterTextSplitter
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(all_pages)
 
-    # Initialize Brain with chunks instead of full pages
+   # 3. Initialize Brain with Manual Batching (Replaces your old lines 34-35)
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vectorstore = FAISS.from_documents(docs, embeddings)
     
+    batch_size = 50
+    vectorstore = None
+    
+    for i in range(0, len(docs), batch_size):
+        batch = docs[i : i + batch_size]
+        if vectorstore is None:
+            vectorstore = FAISS.from_documents(batch, embeddings)
+        else:
+            vectorstore.add_documents(batch)
+
+    # 4. Keep your line 37 and below exactly like this:
     qa_chain = RetrievalQA.from_chain_type(
         llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
         chain_type="stuff",
         retriever=vectorstore.as_retriever()
     )
+    
 # User Query
     user_q = st.text_input("What would you like to compare?")
     if user_q:
