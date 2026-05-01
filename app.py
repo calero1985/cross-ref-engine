@@ -14,7 +14,7 @@ with st.sidebar:
 st.title("📚 Academic Cross-Reference Engine")
 st.write("Upload your textbooks to find contradictions or compare methods!")
 if uploaded_files and api_key:
-    os.environ["OPENAI_API_KEY"] = api_key
+    os.environ["GOOGLE_API_KEY"] = api_key
     
     # Process files
     all_pages = []
@@ -25,9 +25,9 @@ if uploaded_files and api_key:
             all_pages.extend(loader.load_and_split())
     
     # Initialize Brain
-    vectorstore = FAISS.from_documents(all_pages, OpenAIEmbeddings())
+    vectorstore = FAISS.from_documents(all_pages, GoogleGenerativeAIEmbeddings(model="models/embedding-001"))
     qa_chain = RetrievalQA.from_chain_type(
-        llm=ChatOpenAI(model_name="gpt-4o"),
+        llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
         chain_type="stuff",
         retriever=vectorstore.as_retriever()
     )
