@@ -26,7 +26,8 @@ if uploaded_files and api_key:
             all_pages.extend(loader.load()) # Use .load() here for better control
 
     # NEW: Split the text into manageable slices (Chunking)
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    #from langchain.text_splitter import RecursiveCharacterTextSplitter
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(all_pages)
 
