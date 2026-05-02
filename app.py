@@ -37,24 +37,39 @@ if uploaded_files and api_key:
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(all_pages)
 
-    # Step C: Batch Syncing (The "Professional" Way)
-    status.info("🚀 Building Brain in batches...")
+    # Step C: Resilient Syncing (Retry Logic for Paid/Prepaid Tier)
+    status.info("🚀 Building Brain... (This handles large files)")
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     vectorstore = None
-    batch_size = 50 # Sending 50 chunks at a time
+    batch_size = 20  # Smaller batches for higher stability
     
     for i in range(0, len(docs), batch_size):
         batch = docs[i : i + batch_size]
-        if vectorstore is None:
-            vectorstore = FAISS.from_documents(batch, embeddings)
-        else:
-            vectorstore.add_documents(batch)
         
-        # UI Progress Update
-        percent = int(((i + len(batch)) / len(docs)) * 100)
-        status.warning(f"⏳ Processing knowledge: {percent}%")
-        time.sleep(1) # 1 second pause to keep Google happy
+        # This loop tries the batch 3 times if Google fails
+        success = False
+        for attempt in range(3):
+            try:
+                if vectorstore is None:
+                    vectorstore = FAISS.from_documents(batch, embeddings)
+                else:
+                    vectorstore.add_documents(batch)
+                success = True
+                break  # Success! Move to next batch
+            except Exception as e:
+                if attempt < 2:
+                    status.warning(f"🔄 Google is busy. Retrying in 15s... (Attempt {attempt + 1})")
+                    time.sleep(15)
+                else:
+                    st.error("❌ Google API is heavily throttled. Please wait a few minutes and try again.")
+                    st.stop()
+        
+        if success:
+            # UI Progress Update
+            percent = int(((i + len(batch)) / len(docs)) * 100)
+            status.warning(f"⏳ Processing knowledge: {percent}%")
+            time.sleep(1) # Small gap between batches
 
     status.success("✅ Analysis Ready!")
 
