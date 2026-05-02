@@ -14,20 +14,21 @@ st.set_page_config(page_title="Cross-Ref Engine", layout="wide")
 # 2. Sidebar Setup
 with st.sidebar:
     st.title("⚙️ Setup")
+    # Updated label to reflect Google Key
     api_key = st.text_input("Enter Google API Key", type="password")
     uploaded_files = st.file_uploader("Upload 2+ Textbooks (PDF)", type="pdf", accept_multiple_files=True)
 
 st.title("📚 Academic Cross-Reference Engine")
 st.write("Upload your textbooks to find contradictions or compare methods!")
 
-# 3. Main Logic (Runs only when files and key are present)
+# 3. Main Logic
 if uploaded_files and api_key:
     os.environ["GOOGLE_API_KEY"] = api_key
     
-    # Progress Bar UI
+    # Progress UI
     status_text = st.empty()
     
-    # Step A: Load all PDF pages into one list
+    # Step A: Load PDFs
     all_pages = []
     status_text.info("Reading PDFs...")
     for uploaded_file in uploaded_files:
@@ -36,14 +37,16 @@ if uploaded_files and api_key:
             loader = PyPDFLoader(tmp_file.name)
             all_pages.extend(loader.load())
 
-    # Step B: Split text into small chunks
+    # Step B: Chunking
     status_text.info("Splitting text into manageable chunks...")
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(all_pages)
 
-    # Step C: Create Brain (Embeddings) with Batching to avoid Rate Limits
+    # Step C: Rapid Syncing (Optimized for Paid Tier)
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    batch_size = 5  
+    
+    # Increased batch size and removed long sleep timers
+    batch_size = 100  
     vectorstore = None
     
     for i in range(0, len(docs), batch_size):
@@ -53,21 +56,21 @@ if uploaded_files and api_key:
         else:
             vectorstore.add_documents(batch)
         
-        # Update progress
         percent = int((i / len(docs)) * 100)
-        status_text.warning(f"⏳ Syncing knowledge... {percent}% complete")
-        time.sleep(10) # Breathing room for the API
+        status_text.warning(f"🚀 High-speed syncing... {percent}% complete")
+        # Tiny pause just to keep the UI smooth, no longer for rate limits
+        time.sleep(0.1) 
 
     status_text.success("✅ Knowledge Base Ready!")
 
-    # Step D: Setup the Question/Answer Chain
+    # Step D: Setup QA Chain
     qa_chain = RetrievalQA.from_chain_type(
         llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
         chain_type="stuff",
         retriever=vectorstore.as_retriever()
     )
 
-    # Step E: User Interaction
+    # Step E: Analysis UI
     st.divider()
     user_q = st.text_input("What would you like to compare or find in these books?")
     if user_q:
@@ -76,6 +79,6 @@ if uploaded_files and api_key:
             st.markdown("### 🤖 AI Analysis")
             st.write(response)
 
-# 4. Prompt for API Key if missing
+# 4. Prompt if API Key is missing
 elif not api_key:
     st.info("Please enter your Google API Key in the sidebar to begin.")
