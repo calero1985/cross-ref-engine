@@ -52,16 +52,16 @@ if uploaded_files and api_key:
         
             # 4. Keep your line 37 and below exactly like this:
             qa_chain = RetrievalQA.from_chain_type(
-            llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
-            chain_type="stuff",
-            retriever=vectorstore.as_retriever()
+                llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
+                chain_type="stuff",
+                retriever=vectorstore.as_retriever()
     )
     
 # User Query
-    user_q = st.text_input("What would you like to compare?")
-    if user_q:
-        response = qa_chain.run(user_q)
-        st.markdown("### 🤖 Analysis")
-        st.write(response)
-elif not api_key:
-    st.info("Please enter your OpenAI API key in the sidebar to begin.")
+            user_q = st.text_input("What would you like to compare?")
+            if user_q:
+                response = qa_chain.run(user_q)
+                st.markdown("### 🤖 Analysis")
+                st.write(response)
+            elif not api_key:
+                st.info("Please enter your OpenAI API key in the sidebar to begin.")
