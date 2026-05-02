@@ -26,42 +26,35 @@ if uploaded_files and api_key:
         with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
             tmp_file.write(uploaded_file.getvalue())
             loader = PyPDFLoader(tmp_file.name)
-            all_pages.extend(loader.load()) # Use .load() here for better control
+            all_pages.extend(loader.load())
 
-            from langchain_text_splitters import RecursiveCharacterTextSplitter
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-            docs = text_splitter.split_documents(all_pages)
-        
-            # 3. Initialize Brain with High-Stability Batching
-            embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-            
-            batch_size = 20  
-            vectorstore = None
-            
-            for i in range(0, len(docs), batch_size):
-                batch = docs[i : i + batch_size]
-                if vectorstore is None:
-                    vectorstore = FAISS.from_documents(batch, embeddings)
-                else:
-                    vectorstore.add_documents(batch)
-                
-                # This tells the UI we are making progress
-                st.write(f"⏳ Syncing knowledge... {int((i/len(docs))*100)}%")
-                time.sleep(3)
-                
-        
-            # 4. Keep your line 37 and below exactly like this:
-            qa_chain = RetrievalQA.from_chain_type(
-                llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
-                chain_type="stuff",
-                retriever=vectorstore.as_retriever()
-            )
+    # --- MOVE THESE TO THE LEFT (Lined up with 'for' on line 25) ---
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    docs = text_splitter.split_documents(all_pages)
+
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    batch_size = 20  
+    vectorstore = None
     
-# User Query
-            user_q = st.text_input("What would you like to compare?")
-            if user_q:
-                response = qa_chain.run(user_q)
-                st.markdown("### 🤖 Analysis")
-                st.write(response)
+    for i in range(0, len(docs), batch_size):
+        batch = docs[i : i + batch_size]
+        if vectorstore is None:
+            vectorstore = FAISS.from_documents(batch, embeddings)
+        else:
+            vectorstore.add_documents(batch)
+        st.write(f"⏳ Syncing knowledge... {int((i/len(docs))*100)}%")
+        time.sleep(3)
+
+    qa_chain = RetrievalQA.from_chain_type(
+        llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
+        chain_type="stuff",
+        retriever=vectorstore.as_retriever()
+    )
+
+    user_q = st.text_input("What would you like to compare?")
+    if user_q:
+        response = qa_chain.run(user_q)
+        st.markdown("### 🤖 Analysis")
+        st.write(response)
 elif not api_key:
     st.info("Please enter your OpenAI API key in the sidebar to begin.")
