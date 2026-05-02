@@ -43,7 +43,7 @@ if uploaded_files and api_key:
 
     # Step C: Create Brain (Embeddings) with Batching to avoid Rate Limits
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    batch_size = 20  
+    batch_size = 10  
     vectorstore = None
     
     for i in range(0, len(docs), batch_size):
@@ -56,7 +56,7 @@ if uploaded_files and api_key:
         # Update progress
         percent = int((i / len(docs)) * 100)
         status_text.warning(f"⏳ Syncing knowledge... {percent}% complete")
-        time.sleep(2) # Breathing room for the API
+        time.sleep(5) # Breathing room for the API
 
     status_text.success("✅ Knowledge Base Ready!")
 
