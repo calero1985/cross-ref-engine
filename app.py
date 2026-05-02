@@ -42,7 +42,7 @@ if uploaded_files and api_key:
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
     vectorstore = None
-    batch_size = 20  # Smaller batches for higher stability
+    batch_size = 5  # Smaller batches for higher stability
     
     for i in range(0, len(docs), batch_size):
         batch = docs[i : i + batch_size]
@@ -60,7 +60,7 @@ if uploaded_files and api_key:
             except Exception as e:
                 if attempt < 2:
                     status.warning(f"🔄 Google is busy. Retrying in 15s... (Attempt {attempt + 1})")
-                    time.sleep(15)
+                    time.sleep(5)
                 else:
                     st.error("❌ Google API is heavily throttled. Please wait a few minutes and try again.")
                     st.stop()
