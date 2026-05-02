@@ -1,22 +1,32 @@
-# cross-ref-engine
-Project Overview: "An AI-powered synthesis engine for comparing methods and finding contradictions across multiple academic textbooks using RAG".  
+Project Overview and Technical Specifications
+Purpose: The engine is designed as a synthesis tool to identify contradictions and compare methodologies across multiple academic documents.
+
+Technical Stack: The application is built using a modern AI pipeline:
+
+Frontend: Streamlit.
+
+Orchestration: LangChain.
+
+Vector Storage: FAISS.
+
+Large Language Model: Google Gemini 1.5 Flash.
+
+Reproducibility: Installation is standardized through a requirements.txt file to ensure the environment can be replicated across different platforms.
+
+Core Features
+
+RAG Architecture: Ensures AI responses are grounded and derived directly from the provided PDF sources.  
 
 
-Technical Stack: "Powered by Streamlit, LangChain, FAISS vector storage, and Google Gemini 1.5 Flash".  
+High-Speed Syncing: The system is optimized specifically for the Google Gemini 1.5 Flash model.  
 
 
-Installation: "Standardized via requirements.txt to ensure cross-platform reproducibility".
+Batch Processing: Specifically engineered to handle large textbook files without encountering API timeouts.  
+
+Implementation and Operational Requirements
+User Interface: Users must upload at least two PDF files and provide a valid Google API key to begin the analysis.
+
+Resiliency: The system includes built-in retry logic (e.g., "Attempt 2") to handle instances where the Google API may be busy or heavily throttled.
 
 
-# 📚 Academic Cross-Reference Engine
-An AI-powered tool for comparing and cross-referencing academic textbooks using RAG (Retrieval-Augmented Generation).
-
-## 🚀 How to Run
-1. Install requirements: `pip install -r requirements.txt`
-2. Run the app: `streamlit run app.py`
-3. Enter your **Google AI Studio Key** (Paid/Prepaid tier required for large PDFs).
-
-## 🧠 Features
-- **RAG Architecture:** Grounded AI responses based on PDF sources.
-- **High-Speed Syncing:** Optimized for Google Gemini 1.5 Flash.
-- **Batch Processing:** Handles large textbook files without API timeouts.
+Subscription Tier: A paid or prepaid tier for Google AI Studio is required when processing large PDF documents to avoid throttling errors.
