@@ -63,5 +63,5 @@ if uploaded_files and api_key:
                 response = qa_chain.run(user_q)
                 st.markdown("### 🤖 Analysis")
                 st.write(response)
-            elif not api_key:
-                st.info("Please enter your OpenAI API key in the sidebar to begin.")
+elif not api_key:
+    st.info("Please enter your OpenAI API key in the sidebar to begin.")
