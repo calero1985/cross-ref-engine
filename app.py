@@ -1,14 +1,17 @@
 import streamlit as st
 import os
 import tempfile
+import time
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_classic.chains.retrieval_qa.base import RetrievalQA
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+# 1. Page Configuration
 st.set_page_config(page_title="Cross-Ref Engine", layout="wide")
 
+# 2. Sidebar Setup
 with st.sidebar:
     st.title("⚙️ Setup")
     api_key = st.text_input("Enter Google API Key", type="password")
@@ -34,12 +37,25 @@ if uploaded_files and api_key:
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_documents(all_pages)
 
-    # Step C: High-Speed Syncing (You have $25 credit now!)
-    status.info("🚀 Building Brain (High-Speed Mode)...")
+    # Step C: Batch Syncing (The "Professional" Way)
+    status.info("🚀 Building Brain in batches...")
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     
-    # No more loops, no more sleep timers!
-    vectorstore = FAISS.from_documents(docs, embeddings)
+    vectorstore = None
+    batch_size = 50 # Sending 50 chunks at a time
+    
+    for i in range(0, len(docs), batch_size):
+        batch = docs[i : i + batch_size]
+        if vectorstore is None:
+            vectorstore = FAISS.from_documents(batch, embeddings)
+        else:
+            vectorstore.add_documents(batch)
+        
+        # UI Progress Update
+        percent = int(((i + len(batch)) / len(docs)) * 100)
+        status.warning(f"⏳ Processing knowledge: {percent}%")
+        time.sleep(1) # 1 second pause to keep Google happy
+
     status.success("✅ Analysis Ready!")
 
     # Step D: Setup QA
