@@ -1,4 +1,12 @@
 # cross-ref-engine
+Project Overview: "An AI-powered synthesis engine for comparing methods and finding contradictions across multiple academic textbooks using RAG".  
+
+
+Technical Stack: "Powered by Streamlit, LangChain, FAISS vector storage, and Google Gemini 1.5 Flash".  
+
+
+Installation: "Standardized via requirements.txt to ensure cross-platform reproducibility".
+
 
 # 📚 Academic Cross-Reference Engine
 An AI-powered tool for comparing and cross-referencing academic textbooks using RAG (Retrieval-Augmented Generation).
