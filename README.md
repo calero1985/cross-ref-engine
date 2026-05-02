@@ -1,32 +1,59 @@
-Project Overview and Technical Specifications
-Purpose: The engine is designed as a synthesis tool to identify contradictions and compare methodologies across multiple academic documents.
+For your GitHub README, you want text that is professional yet easy for anyone to understand at a glance. It should explain the "magic" of how your app works while showing off the technical work you did.
 
-Technical Stack: The application is built using a modern AI pipeline:
+Here is the intuitive, structured text for your README:
 
-Frontend: Streamlit.
+📚 Academic Cross-Reference Engine
+The Problem
+Students and researchers are often overwhelmed by massive textbooks. Manually finding where authors contradict each other or where different books offer different methods is time-consuming and prone to human error.  
 
-Orchestration: LangChain.
+The Solution
+We built a centralized "AI Brain" that reads thousands of pages across multiple documents simultaneously. It allows you to ask complex questions, such as: "How does Textbook A's definition of DAX differ from Textbook B's?".  
 
-Vector Storage: FAISS.
-
-Large Language Model: Google Gemini 1.5 Flash.
-
-Reproducibility: Installation is standardized through a requirements.txt file to ensure the environment can be replicated across different platforms.
-
-Core Features
-
-RAG Architecture: Ensures AI responses are grounded and derived directly from the provided PDF sources.  
+🧠 How It Works (The AI Pipeline)
+The system uses a professional Retrieval-Augmented Generation (RAG) workflow to ensure accuracy:  
 
 
-High-Speed Syncing: The system is optimized specifically for the Google Gemini 1.5 Flash model.  
+Ingestion: Extracts raw text from uploaded PDFs using PyPDFLoader.  
 
 
-Batch Processing: Specifically engineered to handle large textbook files without encountering API timeouts.  
-
-Implementation and Operational Requirements
-User Interface: Users must upload at least two PDF files and provide a valid Google API key to begin the analysis.
-
-Resiliency: The system includes built-in retry logic (e.g., "Attempt 2") to handle instances where the Google API may be busy or heavily throttled.
+Chunking: Breaks text into 1000-character pieces with overlap so no context is lost.  
 
 
-Subscription Tier: A paid or prepaid tier for Google AI Studio is required when processing large PDF documents to avoid throttling errors.
+Vectorizing: Converts text into mathematical "embeddings" using Google’s models.  
+
+
+Retrieval: When you ask a question, the system finds the most relevant text chunks in the FAISS vector database.  
+
+
+Synthesis: Gemini 1.5 Flash analyzes the chunks and generates a grounded answer based only on your books.  
+
+🚀 Key Innovations
+
+The "Retry Shield": Built-in logic that automatically retries the connection (Attempt 1, 2, 3) if the API is busy or throttled.  
+
+
+High-Speed Batching: Custom processing loops that handle large textbooks (8MB+) without crashing the system.  
+
+
+Zero-Hallucination Mode: Because it uses RAG, the AI is strictly limited to the information in your PDFs.  
+
+⚙️ Technical Stack
+
+Frontend: Streamlit   
+
+
+Orchestration: LangChain   
+
+
+Database: FAISS   
+
+
+LLM: Google Gemini 1.5 Flash   
+
+🛠️ How to Run
+Install requirements: pip install -r requirements.txt
+
+Run the app: streamlit run app.py
+
+
+Setup: Enter your Google API Key in the sidebar and upload at least two PDFs to start comparing!
