@@ -28,9 +28,9 @@ if uploaded_files and api_key:
             loader = PyPDFLoader(tmp_file.name)
             all_pages.extend(loader.load()) # Use .load() here for better control
 
-               from langchain_text_splitters import RecursiveCharacterTextSplitter
-                text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-                docs = text_splitter.split_documents(all_pages)
+            from langchain_text_splitters import RecursiveCharacterTextSplitter
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+            docs = text_splitter.split_documents(all_pages)
         
             # 3. Initialize Brain with High-Stability Batching
             embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
@@ -52,9 +52,9 @@ if uploaded_files and api_key:
         
             # 4. Keep your line 37 and below exactly like this:
             qa_chain = RetrievalQA.from_chain_type(
-                llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
-                chain_type="stuff",
-                retriever=vectorstore.as_retriever()
+            llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
+            chain_type="stuff",
+            retriever=vectorstore.as_retriever()
     )
     
 # User Query
