@@ -1,7 +1,3 @@
-For your GitHub README, you want text that is professional yet easy for anyone to understand at a glance. It should explain the "magic" of how your app works while showing off the technical work you did.
-
-Here is the intuitive, structured text for your README:
-
 📚 Academic Cross-Reference Engine
 The Problem
 Students and researchers are often overwhelmed by massive textbooks. Manually finding where authors contradict each other or where different books offer different methods is time-consuming and prone to human error.  
