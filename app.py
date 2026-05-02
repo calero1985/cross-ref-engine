@@ -55,7 +55,7 @@ if uploaded_files and api_key:
                 llm=ChatGoogleGenerativeAI(model="gemini-1.5-flash"),
                 chain_type="stuff",
                 retriever=vectorstore.as_retriever()
-    )
+            )
     
 # User Query
             user_q = st.text_input("What would you like to compare?")
